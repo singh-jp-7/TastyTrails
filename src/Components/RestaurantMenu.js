@@ -1,20 +1,15 @@
-import { IMG_URL } from "../utils/constants";
+import { useParams } from "react-router-dom";
+import useRestaurantMenu from "../utils/useRestaurantMenu";
 
-const RestaurantMenu = ({ resData }) => {
-  const { name, costForTwo, cuisines, avgRatingString, cloudinaryImageId } =
-    resData;
-
+const RestaurantMenu = () => {
+  const { resId } = useParams();
+  const restaurantMenu = useRestaurantMenu(resId);
+  console.log("restaurantMenu", restaurantMenu)
   return (
-    <div className="m-4 p-4 w-[250px] bg-gray-100 hover:bg-slate-200">
-      <img
-        className="w-48 rounded-lg h-48"
-        alt="Restaurant"
-        src={IMG_URL + cloudinaryImageId}></img>
-      <div className="w-52"> 
-        <h1 className="font-bold text-lg">{name}</h1>
-        <h3 className="text-wrap">{cuisines?.join(",")}</h3>
-        <h2>{avgRatingString}</h2>
-        <h2>{costForTwo}</h2>
+    <div className="flex justify-center">
+      <h1>{restaurantMenu?.cards[0]?.card?.card?.text}</h1>
+      <div className="shadow-lg">
+        <h2>{restaurantMenu?.cards[2]?.card?.card.info?.avgRatingString}</h2>
       </div>
     </div>
   );
