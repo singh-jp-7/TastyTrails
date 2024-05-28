@@ -6,11 +6,20 @@ import useRestaurantData from "../utils/useRestaurantsData";
 import { Link } from "react-router-dom";
 
 const Body = () => {
+  const [listOfRestaurants, setListOfRestaurants] = useState([]);
+  const [searchedItems, setSearchedItems] = useState([]);
+
+  const [searchText, setSearchText] = useState("");
   const resInfo = useRestaurantData();
   const dishTypes =
     resInfo?.cards[0]?.card?.card?.gridElements?.infoWithStyle?.info;
   const resLists =
     resInfo?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants;
+
+  useEffect(() => {
+    setListOfRestaurants(resLists);
+    setSearchedItems(resLists);
+  }, [resLists]);
 
   const PromotedRestaurantCard = PromotedCard(RestaurantCard);
   return resLists?.length !== 0 ? (
@@ -26,8 +35,20 @@ const Body = () => {
           placeholder="Search"
           className="px-2 m-4 border-gray border-2 rounded-lg"
           type="text"
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
         ></input>
-        <button className="m-4 bg-slate-300 rounded-lg px-4 py-1 shadow-lg">
+        <button
+          className="m-4 bg-slate-300 rounded-lg px-4 py-1 shadow-lg"
+          onClick={() => {
+            const searchedRestaurants = listOfRestaurants.filter((res) =>
+              res.info.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+            setSearchedItems(searchedRestaurants);
+          }}
+        >
           Search
         </button>
         <button className="m-4 bg-slate-300 rounded-lg px-1 shadow-lg">
@@ -54,11 +75,12 @@ const Body = () => {
         Top Restaurants In Your Location
       </span>
       <div className="flex mx-4 p-4 flex-wrap justify-center">
-        {resLists?.map((resList) => {
+        {searchedItems?.map((resList) => {
           return (
             <Link key={resList.info.id} to={"/restaurant/" + resList.info.id}>
-              {resList?.info?.aggregatedDiscountInfoV3 && Object.keys(resList?.info?.aggregatedDiscountInfoV3).length >
-              0 ? (
+              {resList?.info?.aggregatedDiscountInfoV3 &&
+              Object.keys(resList?.info?.aggregatedDiscountInfoV3).length >
+                0 ? (
                 <PromotedRestaurantCard resData={resList.info} />
               ) : (
                 <RestaurantCard key={resList.info.id} resData={resList?.info} />
